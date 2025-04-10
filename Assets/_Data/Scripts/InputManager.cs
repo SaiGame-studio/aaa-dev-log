@@ -2,33 +2,20 @@ using UnityEngine;
 
 public class InputManager : SaiSingleton<InputManager>
 {
-    [SerializeField] protected Vector2 screenBounds;
+    [SerializeField] protected bool isLeftMouseHeld;
+    [SerializeField] protected bool isRightMouseClicked;
 
-    protected override void Awake()
+    public bool IsLeftMouseHeld => isLeftMouseHeld;
+    public bool IsRightMouseClicked => isRightMouseClicked;
+
+    protected void Update()
     {
-        base.Awake();
-        CalculateScreenBounds();
+        this.CheckMouseButtons();
     }
 
-    private void CalculateScreenBounds()
+    protected virtual void CheckMouseButtons()
     {
-        Camera cam = Camera.main;
-        Vector3 topRight = cam.ViewportToWorldPoint(new Vector3(1, 1, cam.nearClipPlane));
-        this.screenBounds = (Vector2)topRight;
-    }
-
-    public Vector3 GetMouseWorldPosition()
-    {
-        Vector3 mouseScreenPosition = Input.mousePosition;
-        mouseScreenPosition.z = Camera.main.transform.position.y;
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
-        return worldPosition;
-    }
-
-    private Vector3 ClampPositionToScreen(Vector3 position)
-    {
-        position.x = Mathf.Clamp(position.x, -screenBounds.x, screenBounds.x);
-        position.y = Mathf.Clamp(position.y, -screenBounds.y, screenBounds.y);
-        return position;
+        this.isLeftMouseHeld = Input.GetMouseButton(0);
+        this.isRightMouseClicked = Input.GetMouseButtonDown(1);
     }
 }
